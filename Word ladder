@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Helper function to check if two words differ by exactly one character
+bool isNeighbor(const char* w1, const char* w2, int len) {
+    int diff = 0;
+    for (int i = 0; i < len; i++) {
+        if (w1[i] != w2[i]) {
+            diff++;
+            if (diff > 1) return false;
+        }
+    }
+    return diff == 1;
+}
+
+// BFS Queue Item Definition
+typedef struct {
+    int word_idx; // Index in wordList, -1 for beginWord
+    int level;
+} QueueItem;
+
+int ladderLength(char* beginWord, char* endWord, char** wordList, int wordListSize) {
+    int word_len = strlen(beginWord);
+    int target_idx = -1;
+    
+    // Check if endWord exists in the list
+    for (int i = 0; i < wordListSize; i++) {
+        if (strcmp(wordList[i], endWord) == 0) {
+            target_idx = i;
+            break;
+        }
+    }
+    if (target_idx == -1) return 0; // Target not reachable
+    
+    // Allocate tracking structures
+    bool* visited = (bool*)calloc(wordListSize, sizeof(bool));
+    QueueItem* queue = (QueueItem*)malloc((wordListSize + 1) * sizeof(QueueItem));
+    
+    int head = 0, tail = 0;
+    
+    // Initialize BFS with the beginWord
+    queue[tail++] = (QueueItem){-1, 1};
+    
+    while (head < tail) {
+        QueueItem curr = queue[head++];
+        char* curr_word = (curr.word_idx == -1) ? beginWord : wordList[curr.word_idx];
+        
+        if (curr.word_idx == target_idx) {
+            free(visited);
+            free(queue);
+            return curr.level;
+        }
+        
+        // Find all unvisited one-letter mutations in the list
+        for (int i = 0; i < wordListSize; i++) {
+            if (!visited[i] && isNeighbor(curr_word, wordList[i], word_len)) {
+                visited[i] = true;
+                queue[tail++] = (QueueItem){i, curr.level + 1};
+            }
+        }
+    }
+    
+    free(visited);
+    free(queue);
+    return 0;
+}
