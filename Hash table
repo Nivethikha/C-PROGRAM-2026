@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+
+char* minWindow(char* s, char* t) {
+    if (!s || !t || *s == '\0' || *t == '\0') return "";
+
+    int s_len = strlen(s);
+    int t_len = strlen(t);
+    if (s_len < t_len) return "";
+
+    // Frequency arrays for ASCII characters
+    int t_count[128] = {0};
+    int window_count[128] = {0};
+
+    // Count required characters in t
+    int required = 0;
+    for (int i = 0; i < t_len; i++) {
+        if (t_count[(int)t[i]] == 0) {
+            required++; // Number of unique characters needed
+        }
+        t_count[(int)t[i]]++;
+    }
+
+    int left = 0, right = 0;
+    int formed = 0; // Number of unique characters matching required frequency
+    int min_len = INT_MAX;
+    int start_idx = 0;
+
+    // Static buffer to hold the output substring safely
+    static char result[100005]; 
+
+    while (right < s_len) {
+        char c = s[right];
+        window_count[(int)c]++;
+
+        // Check if the current character satisfies its requirement in t
+        if (t_count[(int)c] > 0 && window_count[(int)c] == t_count[(int)c]) {
+            formed++;
+        }
+
+        // Shrink the window from the left while it remains valid
+        while (left <= right && formed == required) {
+            char left_c = s[left];
+
+            // Update the minimal window tracked so far
+            if (right - left + 1 < min_len) {
+                min_len = right - left + 1;
+                start_idx = left;
+            }
+
+            // Remove the leftmost character from the window
+            window_count[(int)left_c]--;
+            if (t_count[(int)left_c] > 0 && window_count[(int)left_c] < t_count[(int)left_c]) {
+                formed--;
+            }
+            left++;
+        }
+        right++;
+    }
+
+    // If no valid window was found, return empty string
+    if (min_len == INT_MAX) return "";
+
+    // Copy the minimum substring into the output buffer and null-terminate it
+    strncpy(result, s + start_idx, min_len);
+    result[min_len] = '\0';
+
+    return result;
+}
+
