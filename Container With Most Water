@@ -1,0 +1,19 @@
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+int maxArea(int* height, int heightSize) {
+    int left = 0, right = heightSize - 1;
+    int max_water = 0;
+    
+    while (left < right) {
+        int current_water = (right - left) * MIN(height[left], height[right]);
+        max_water = MAX(max_water, current_water);
+        
+        if (height[left] < height[right]) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    return max_water;
+}
