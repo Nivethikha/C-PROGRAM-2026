@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+bool wordBreak(char* s, char** wordDict, int wordDictSize) {
+    int len = strlen(s);
+    bool dp[301] = {true}; // dp[i] tracks if s[0...i-1] is valid
+
+    for (int i = 1; i <= len; i++) {
+        for (int j = 0; j < i; j++) {
+            if (dp[j]) {
+                int rem = i - j;
+                for (int k = 0; k < wordDictSize; k++) {
+                    if (strlen(wordDict[k]) == rem && strncmp(s + j, wordDict[k], rem) == 0) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+                if (dp[i]) break;
+            }
+        }
+    }
+    return dp[len];
+}
