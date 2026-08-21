@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+// Helper function to calculate the sum of squares of digits
+int getNext(int n) {
+    int sum = 0;
+    while (n > 0) {
+        int digit = n % 10;
+        sum += digit * digit;
+        n /= 10;
+    }
+    return sum;
+}
+
+bool isHappy(int n) {
+    // Unhappy numbers always trap into a cycle containing 4
+    while (n != 1 && n != 4) {
+        n = getNext(n);
+    }
+    return n == 1;
+}
