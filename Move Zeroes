@@ -1,0 +1,14 @@
+void moveZeroes(int* nums, int numsSize) {
+    int insert_pos = 0;
+    
+    for (int i = 0; i < numsSize; i++) {
+        if (nums[i] != 0) {
+            // Swap elements using a temporary variable
+            int temp = nums[insert_pos];
+            nums[insert_pos] = nums[i];
+            nums[i] = temp;
+            
+            insert_pos++;
+        }
+    }
+}
