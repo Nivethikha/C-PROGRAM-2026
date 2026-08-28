@@ -1,0 +1,8 @@
+int strStr(char* h, char* n) {
+    for (int i = 0; h[i] != '\0'; i++) {
+        int j = 0;
+        while (n[j] != '\0' && h[i + j] == n[j]) j++;
+        if (n[j] == '\0') return i;
+    }
+    return -1;
+}
