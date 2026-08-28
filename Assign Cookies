@@ -1,0 +1,28 @@
+#include <stdlib.h>
+
+// Comparison function needed for qsort
+int compare(const void* a, const void* b) {
+    int val1 = *(const int*)a;
+    int val2 = *(const int*)b;
+    if (val1 < val2) return -1;
+    if (val1 > val2) return 1;
+    return 0;
+}
+
+int findContentChildren(int* g, int gSize, int* s, int sSize) {
+    // Sort both arrays in ascending order
+    qsort(g, gSize, sizeof(int), compare);
+    qsort(s, sSize, sizeof(int), compare);
+    
+    int child_i = 0;
+    int cookie_j = 0;
+    
+    while (child_i < gSize && cookie_j < sSize) {
+        if (s[cookie_j] >= g[child_i]) {
+            child_i++;
+        }
+        cookie_j++;
+    }
+    
+    return child_i;
+}
