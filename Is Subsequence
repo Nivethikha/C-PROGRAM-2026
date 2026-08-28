@@ -1,0 +1,18 @@
+#include <stdbool.h>
+#include <string.h>
+
+bool isSubsequence(char* s, char* t) {
+    int i = 0; // Pointer for s
+    int j = 0; // Pointer for t
+    
+    // Loop until we reach the null terminator of either string
+    while (s[i] != '\0' && t[j] != '\0') {
+        if (s[i] == t[j]) {
+            i++; // Found a match, step forward in s
+        }
+        j++;     // Always step forward in t
+    }
+    
+    // If we reached the end of s, it's a valid subsequence
+    return s[i] == '\0';
+}
