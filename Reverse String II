@@ -1,0 +1,27 @@
+#include <string.h>
+
+// Helper macro to find the minimum of two values
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+char* reverseStr(char* s, int k) {
+    int len = strlen(s);
+    
+    // Jump forward by 2k characters each step
+    for (int i = 0; i < len; i += 2 * k) {
+        int left = i;
+        // Cap the right pointer to the string boundary
+        int right = MIN(i + k - 1, len - 1);
+        
+        // In-place reverse
+        while (left < right) {
+            char temp = s[left];
+            s[left] = s[right];
+            s[right] = temp;
+            
+            left++;
+            right--;
+        }
+    }
+    
+    return s;
+}
