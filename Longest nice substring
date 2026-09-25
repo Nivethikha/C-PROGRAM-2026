@@ -1,0 +1,37 @@
+#include <string.h>
+#include <stdbool.h>
+
+char* longestNiceSubstring(char* s) {
+    int len = strlen(s);
+    if (len < 2) return "";
+
+    // Track which characters are present in the current string
+    bool has_lower[26] = {false};
+    bool has_upper[26] = {false};
+    
+    for (int i = 0; i < len; i++) {
+        if (s[i] >= 'a' && s[i] <= 'z') has_lower[s[i] - 'a'] = true;
+        if (s[i] >= 'A' && s[i] <= 'Z') has_upper[s[i] - 'A'] = true;
+    }
+
+    // Find the first character that breaks the "nice" property
+    for (int i = 0; i < len; i++) {
+        char c = s[i];
+        bool is_lower = (c >= 'a' && c <= 'z');
+        int idx = is_lower ? (c - 'a') : (c - 'A');
+        
+        // If one case exists but the other doesn't, this character cannot be in a nice substring
+        if (!has_lower[idx] || !has_upper[idx]) {
+            // Split the string into left and right parts around the bad character
+            s[i] = '\0'; // Temporarily split string
+            char* left = longestNiceSubstring(s);
+            char* right = longestNiceSubstring(s + i + 1);
+            
+            // Return the longer one (if tied, left wins because it appears earlier)
+            return (strlen(left) >= strlen(right)) ? left : right;
+        }
+    }
+
+    // If the entire string is nice, return it
+    return s;
+}
