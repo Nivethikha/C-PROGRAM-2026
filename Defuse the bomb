@@ -1,0 +1,39 @@
+#include <stdlib.h>
+#include <string.h>
+
+int* decrypt(int* code, int codeSize, int k, int* returnSize) {
+    *returnSize = codeSize;
+    int* result = (int*)malloc(codeSize * sizeof(int));
+    
+    // Base Case: If k is 0, fill everything with 0
+    if (k == 0) {
+        memset(result, 0, codeSize * sizeof(int));
+        return result;
+    }
+    
+    // Set up the initial window boundaries
+    int start = (k > 0) ? 1 : codeSize + k;
+    int end = (k > 0) ? k : codeSize - 1;
+    
+    // Calculate the sum of the first window
+    int current_sum = 0;
+    for (int i = start; i <= end; i++) {
+        current_sum += code[i % codeSize];
+    }
+    
+    // Slide the window across the circular array
+    for (int i = 0; i < codeSize; i++) {
+        result[i] = current_sum;
+        
+        // Remove the element leaving the window
+        current_sum -= code[start % codeSize];
+        // Add the new element entering the window
+        current_sum += code[(end + 1) % codeSize];
+        
+        // Shift window boundaries
+        start++;
+        end++;
+    }
+    
+    return result;
+}
