@@ -1,0 +1,26 @@
+#include <stdlib.h>
+
+// Comparison function for qsort
+int compare(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int minimumDifference(int* nums, int numsSize, int k) {
+    // If k is 1, the difference between the highest and lowest of 1 element is always 0
+    if (k == 1) return 0;
+    
+    // Sort the scores in ascending order
+    qsort(nums, numsSize, sizeof(int), compare);
+    
+    int minDiff = nums[k - 1] - nums[0]; // Initialize with the first window
+    
+    // Slide a window of size k across the sorted array
+    for (int i = k; i < numsSize; i++) {
+        int currentDiff = nums[i] - nums[i - k + 1];
+        if (currentDiff < minDiff) {
+            minDiff = currentDiff;
+        }
+    }
+    
+    return minDiff;
+}
