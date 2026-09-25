@@ -1,0 +1,73 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Node structure for the hash table chaining
+struct Node {
+    int key;
+    int index;
+    struct Node* next;
+};
+
+// Hash function to map values to buckets
+int hash(int key, int size) {
+    long long k = key; // Handle negative keys safely
+    int h = k % size;
+    return h < 0 ? h + size : h;
+}
+
+bool containsNearbyDuplicate(int* nums, int numsSize, int k) {
+    // Dynamically size the table to avoid too many collisions
+    int tableSize = numsSize < 10000 ? numsSize : 10000;
+    struct Node** hashTable = calloc(tableSize, sizeof(struct Node*));
+    
+    for (int i = 0; i < numsSize; i++) {
+        int bucket = hash(nums[i], tableSize);
+        struct Node* curr = hashTable[bucket];
+        
+        // Search for the element in the bucket
+        while (curr != NULL) {
+            if (curr->key == nums[i]) {
+                // If found and within distance k, free memory and return true
+                if (i - curr->index <= k) {
+                    // Freeing allocated table memory before returning
+                    for (int j = 0; j < tableSize; j++) {
+                        struct Node* temp = hashTable[j];
+                        while (temp) {
+                            struct Node* toDelete = temp;
+                            temp = temp->next;
+                            free(toDelete);
+                        }
+                    }
+                    free(hashTable);
+                    return true;
+                }
+                // Update to the most recent index
+                curr->index = i;
+                break;
+            }
+            curr = curr->next;
+        }
+        
+        // If element wasn't in the bucket, insert it at the head
+        if (curr == NULL) {
+            struct Node* newNode = malloc(sizeof(struct Node));
+            newNode->key = nums[i];
+            newNode->index = i;
+            newNode->next = hashTable[bucket];
+            hashTable[bucket] = newNode;
+        }
+    }
+    
+    // Clean up allocated memory before returning false
+    for (int j = 0; j < tableSize; j++) {
+        struct Node* temp = hashTable[j];
+        while (temp) {
+            struct Node* toDelete = temp;
+            temp = temp->next;
+            free(toDelete);
+        }
+    }
+    free(hashTable);
+    
+    return false;
+}
