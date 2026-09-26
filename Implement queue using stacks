@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Standard Stack implementation using a dynamic array
+typedef struct {
+    int* data;
+    int top;
+    int capacity;
+} Stack;
+
+Stack* createStack(int capacity) {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    stack->data = (int*)malloc(capacity * sizeof(int));
+    stack->top = -1;
+    stack->capacity = capacity;
+    return stack;
+}
+
+void stackPush(Stack* stack, int x) {
+    stack->data[++(stack->top)] = x;
+}
+
+int stackPop(Stack* stack) {
+    return stack->data[(stack->top)--];
+}
+
+int stackPeek(Stack* stack) {
+    return stack->data[stack->top];
+}
+
+bool stackIsEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+void stackFree(Stack* stack) {
+    free(stack->data);
+    free(stack);
+}
+
+// MyQueue implementation using two stacks
+typedef struct {
+    Stack* inStack;
+    Stack* outStack;
+} MyQueue;
+
+MyQueue* myQueueCreate() {
+    MyQueue* queue = (MyQueue*)malloc(sizeof(MyQueue));
+    // Constraints on LeetCode typically involve up to 1000 operations
+    queue->inStack = createStack(1000);
+    queue->outStack = createStack(1000);
+    return queue;
+}
+
+void myQueuePush(MyQueue* obj, int x) {
+    // Always push new elements to the input stack
+    stackPush(obj->inStack, x);
+}
+
+int myQueuePop(MyQueue* obj) {
+    // If the output stack is empty, transfer all elements from the input stack
+    if (stackIsEmpty(obj->outStack)) {
+        while (!stackIsEmpty(obj->inStack)) {
+            stackPush(obj->outStack, stackPop(obj->inStack));
+        }
+    }
+    return stackPop(obj->outStack);
+}
+
+int myQueuePeek(MyQueue* obj) {
+    // If the output stack is empty, transfer all elements from the input stack
+    if (stackIsEmpty(obj->outStack)) {
+        while (!stackIsEmpty(obj->inStack)) {
+            stackPush(obj->outStack, stackPop(obj->inStack));
+        }
+    }
+    return stackPeek(obj->outStack);
+}
+
+bool myQueueEmpty(MyQueue* obj) {
+    // The queue is empty only when both stacks are empty
+    return stackIsEmpty(obj->inStack) && stackIsEmpty(obj->outStack);
+}
+
+void myQueueFree(MyQueue* obj) {
+    stackFree(obj->inStack);
+    stackFree(obj->outStack);
+    free(obj);
+}
